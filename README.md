@@ -195,14 +195,14 @@ sudo cp /usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf /mnt/usb/boot/grub/themes/
 3. Convertir la police du format TTF à PF2
 
 ```bash
-sudo grub-mkfont -s 20 -o /mnt/usb/boot/grub/themes/votre_theme/Ubuntu-B.pf2 -s 24 /mnt/usb/boot/grub/themes/votre_theme/Ubuntu-B.ttf
+sudo grub-mkfont -s 24 -o /mnt/usb/boot/grub/themes/votre_theme/Ubuntu-B.pf2 /mnt/usb/boot/grub/themes/votre_theme/Ubuntu-B.ttf
 ```
 
 > [!NOTE]
 >
 > Les fichiers .pf2 sont des polices bitmap spécialement formatées pour GRUB.
 >
-> L'option -s 20 définit la taille de la police en sortie. Cette option est facultative.
+> L'option -s 24 définit la taille de la police en sortie. Cette option est facultative.
 >
 > Penser à supprimer la police ttf du dossier après conversion `sudo rm /chemin/police.ttf`
 
@@ -309,17 +309,17 @@ insmod all_video
 insmod gfxterm
 insmod terminal
 insmod font
+insmod png
 terminal_output gfxterm
+
+loadfont /boot/grub/themes/LaCapsule/Ubuntu-B.pf2
 
 if [ "${grub_platform}" = "efi" ]; then
     # Configuration pour le mode UEFI
-    loadfont /boot/grub/themes/LaCapsule/Ubuntu-B.pf2
     set theme=/boot/grub/themes/LaCapsule/theme.txt
     set gfxmode=1920x1080
 else
     # Configuration pour le mode BIOS Legacy
-    insmod png
-    loadfont /boot/grub/themes/LaCapsule/Ubuntu-B.pf2
     set theme=/boot/grub/themes/LaCapsule/theme.txt
     set gfxpayload=800x600x16
 fi
@@ -330,12 +330,18 @@ Nous allons expliquer chaque ligne du texte ci-dessus :
 - set timeout=60 ***# Définit le délai d'attente avant le démarrage automatique (en secondes)***
 - set default=0 ***# Définit l'entrée par défaut du menu de démarrage (0 = première entrée)***
 - set gfxmode=auto ***# Configure le mode graphique automatiquement***
+- insmod loopback ***# Charge le module pour monter des images disque comme des systèmes de fichiers***
+- insmod iso9660 ***# Charge le module pour lire les systèmes de fichiers ISO 9660 (CD-ROM)***
+- insmod linux ***# Charge le module pour démarrer les noyaux Linux***
+- insmod all_video ***# Charge tous les modules vidéo disponibles***
 - insmod gfxterm ***# Charge le module pour le terminal graphique***
-- insmode terminal ***# Charge le module pour le terminal***
+- insmod terminal ***# Charge le module pour le terminal standard***
+- insmod font ***# Charge le module pour gérer les polices de caractères***
+- insmod png ***# Charge le module pour gérer les images PNG***
 - terminal_output gfxterm ***# Configure la sortie du terminal en mode graphique***
+- loadfont /boot/grub/themes/LaCapsule/Ubuntu-B.pf2 ***# Définit la police personnalisée*** 
 - set gfxmode=1024x768 ***# Définit une résolution graphique spécifique (1024x768)***
-- set theme=/boot/grub/themes... **# Définit le thème à utiliser pour le menu GRUB**
-- loadfont /boot/grub/themes/LaCapsule/Ubuntu-B.pf2 **# Définit la police personnalisée** 
+- set theme=/boot/grub/themes... ***# Définit le thème à utiliser pour le menu GRUB***
 
 ### Importer un iso dans notre clé USB
 
